@@ -31,7 +31,7 @@ public class FXMLController {
     private Button btnCalcolaPercorso;
 
     @FXML
-    private ComboBox<?> boxRuolo;
+    private ComboBox<String> boxRuolo;
 
     @FXML
     private TextField txtArtista;
@@ -42,16 +42,49 @@ public class FXMLController {
     @FXML
     void doArtistiConnessi(ActionEvent event) {
 
+    	txtResult.clear();
+    	
+    	txtResult.appendText("Artisti connessi:\n"+this.model.artistiConnessi());
+    	
+    	this.btnCalcolaPercorso.setDisable(false);
     }
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
 
+    	txtResult.clear();
+    	
+    	String input = this.txtArtista.getText();
+    	
+    	try {
+    		int scelto = Integer.parseInt(input);
+        	txtResult.appendText("Percorso massimo:\n"+this.model.risultato(scelto));
+
+    	}catch(NumberFormatException e) {
+    		txtResult.setText("Inserire un identificativo numerico positivo.");
+    		return;
+    	}
+    	
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	
+    	String ruolo = this.boxRuolo.getValue();
+    	
+    	if(ruolo == null) {
+    		txtResult.setText("Selezionare un ruolo dal menù.");
+    		return;
+    	}
 
+    	txtResult.appendText("Crea grafo...");
+    	this.model.creaGrafo(ruolo);
+    	txtResult.appendText("\n\n#VERTICI: "+this.model.numeroVertici());
+    	txtResult.appendText("\n#ARCHI: "+this.model.numeroArchi());
+    	
+    	this.btnArtistiConnessi.setDisable(false);
     }
 
     @FXML
@@ -67,6 +100,9 @@ public class FXMLController {
 
 	public void setModel(Model model) {
 		this.model = model;
+		this.boxRuolo.getItems().addAll(this.model.elencoRuoli());
+		this.btnArtistiConnessi.setDisable(true);
+		this.btnCalcolaPercorso.setDisable(true);
 	}
 }
 
